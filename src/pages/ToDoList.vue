@@ -28,6 +28,7 @@ onMounted(async () => {
 <style scoped>
 .main {
     background-color: #F1F4F9;
+    padding: 20px;
 }
 .loader {
   border: 16px solid #f3f3f3; /* Light grey */
