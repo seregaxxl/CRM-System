@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-import { updateTask, deleteTask, getAllTasks } from '../api';
+import { updateTask, deleteTask } from '../api';
 import editImg from '../assets/edit.png';
 import deleteImg from '../assets/delete.png';
 import saveImg from '../assets/save.png';
 import cancelImg from '../assets/cancel.png';
 
+const emit = defineEmits(['dataUpdated'])
 const editMode = ref<boolean>(false)
 const titleBuffer = ref<string>('')
 const props = defineProps<{
@@ -13,13 +14,22 @@ const props = defineProps<{
 }>();
 
 async function updateTaskAndRefresh(id:number,isDone?:boolean, title?:string) {
+  try {
     await updateTask(id, isDone, title)
-    getAllTasks('all')
+    emit('dataUpdated')
+  } catch (error) {
+    console.error('Error saving edit:', error)
+  }
 }
 
 async function deleteTaskAndRefresh(id:number) {
+  try {
     await deleteTask(id)
-    getAllTasks('all')
+    emit('dataUpdated')
+  } catch (error) {
+    console.error('Error saving edit:', error)
+  }
+    
 }
 
 async function saveEdit (id:number, title:string) {
@@ -54,8 +64,7 @@ function toggleOffEdit () {
   </div>
   <div v-else class="viewModeLI">
     <div class="checkboxAndTitle">
-        <input :id="'checkbox-' + props.task.id" class="checkbox" @change="updateTaskAndRefresh(props.task.id, false)" v-if="props.task.isDone" type="checkbox" checked>
-        <input :id="'checkbox-' + props.task.id" class="checkbox" @change="updateTaskAndRefresh(props.task.id, true)" v-else type="checkbox">
+        <input :id="'checkbox-' + props.task.id" class="checkbox" @change="updateTaskAndRefresh(props.task.id, !props.task.isDone)" type="checkbox" :checked="props.task.isDone">
         <div :class="{taskDoneClass: (props.task.isDone)}">{{ props.task.title }}</div>
     </div>
     <div class="twoButtons">
@@ -116,7 +125,12 @@ button.active {
     }
   }
 }
+.checkboxAndTitle {
+  max-width: 140px;
+  overflow: hidden;
+}
 .checkbox {
+  min-width: 14px;
   width: 14px;
   height: 14px;
   background-color: white;

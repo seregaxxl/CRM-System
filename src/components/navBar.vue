@@ -1,22 +1,29 @@
 <script setup lang="ts">
-import {activeTab} from '../store/activeTabBus'
-import { allTasks } from '../store/allTasksBus';
 
+import { ref } from 'vue';
+import { TaskInfo } from '../types';
 
-
-
+const emit = defineEmits(['activeTab'])
+const props = defineProps<{
+  info: TaskInfo;
+}>();
+const activeTab = ref<string>('all')
+function changeActiveTab (filter:string) {
+  activeTab.value = filter
+  emit('activeTab', filter)
+}
 </script>
 
 <template>
     <nav class="tasks-tabs-switcher">
-      <button class="switcher-button" :class="{ active: (activeTab === 'tasks-all') }" @click="activeTab = 'tasks-all'">
-        Все({{ allTasks.info.all}})
+      <button class="switcher-button" :class="{ active: (activeTab === 'all') }" @click="changeActiveTab('all')">
+        Все({{ props.info.all}})
       </button>
-      <button class="switcher-button" :class="{ active: (activeTab === 'tasks-in-progress') }" @click="activeTab = 'tasks-in-progress'">
-        в работе({{allTasks.info.inWork}})
+      <button class="switcher-button" :class="{ active: (activeTab === 'inWork') }" @click="changeActiveTab('inWork')">
+        в работе({{props.info.inWork}})
       </button>
-      <button class="switcher-button" :class="{ active: (activeTab === 'tasks-done') }" @click="activeTab = 'tasks-done'">
-        сделано({{allTasks.info.completed}})
+      <button class="switcher-button" :class="{ active: (activeTab === 'completed') }" @click="changeActiveTab('completed')">
+        сделано({{props.info.completed}})
       </button>
     </nav>
 </template>
@@ -25,7 +32,6 @@ import { allTasks } from '../store/allTasksBus';
 .tasks-tabs-switcher {
     display: flex;
     justify-content: space-between;
-    /* width: 200px; */
     margin-top: 10px;
     padding: 10px;
 }
