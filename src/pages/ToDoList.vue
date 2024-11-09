@@ -1,25 +1,49 @@
 <script setup lang="ts">
 import navBar from '../components/navBar.vue';
+import loaderComponent from '../components/loaderComponent.vue';
 import taskForm from '../components/taskForm.vue';
 import toDoListInternal from '../components/toDoListInternal.vue';
-import { isLoading } from '../store/loadingEventBus'
+import { onMounted, ref } from 'vue';
 
 import {getAllTasks} from '../api/index'
-import { onMounted } from 'vue';
+import { AllTasks } from '../types'
+
+
+const tasks = ref<AllTasks>({info: { all: 0, completed: 0, inWork: 0 },
+    data: [],})
+const isLoading = ref<boolean>(true)
+const activeTabLocal = ref('all')
+
+function changeActiveTab (activeTab:string) {
+    activeTabLocal.value = activeTab; 
+    updateData()
+}
+
+async function updateData () {
+    isLoading.value = true
+    try {
+        tasks.value = await getAllTasks(activeTabLocal.value)
+    } catch (error) {
+        console.error("Failed to fetch tasks:", error);
+    } finally {
+        isLoading.value = false
+    }
+}
+
 
 onMounted(async () => {
-    await getAllTasks('all')
+    updateData()
 })
 
 </script>
 
 <template>
     <main class="main">
-        <div v-if="isLoading" class="loader"></div>
-        <section v-else class="main">
-            <taskForm/>
-            <navBar/>
-            <toDoListInternal/>    
+        <loaderComponent v-if="isLoading"/>
+        <section class="main">
+            <taskForm @dataUpdated="updateData"/>
+            <navBar :info="tasks.info" @activeTab="changeActiveTab"/>
+            <toDoListInternal :tasks="tasks.data" @dataUpdated="updateData"/>    
         </section>
     </main>
 
@@ -29,18 +53,5 @@ onMounted(async () => {
 .main {
     background-color: #F1F4F9;
     padding: 20px;
-}
-.loader {
-  border: 16px solid #f3f3f3; /* Light grey */
-  border-top: 16px solid #3498db; /* Blue */
-  border-radius: 50%;
-  width: 120px;
-  height: 120px;
-  animation: spin 2s linear infinite;
-}
-
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
 }
 </style>

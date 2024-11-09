@@ -1,7 +1,7 @@
 import { ref } from 'vue'
 
 
-type TaskInfo = {
+export type TaskInfo = {
     all: number
     completed: number
     inWork: number
@@ -14,12 +14,12 @@ isDone: boolean
 title: string
 }
   
-type AllTasks = {
+export type AllTasks = {
 info: TaskInfo
-tasks: Task[]
+data: Task[]
 }
 
 export const allTasks = ref<AllTasks>({
 info: { all: 0, completed: 0, inWork: 0 },
-tasks: [],
+data: [],
 })

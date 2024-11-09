@@ -1,14 +1,21 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-import {addTask, getAllTasks} from '../api/index'
+import {addTask} from '../api/index'
 
 const newTask = ref('')
 const errorMessage = ref('');
 
+const emit = defineEmits(['dataUpdated'])
+
 async function addTaskAndRefresh(title:string) {
     if (title.length < 64 && title.length > 2) {
-        await addTask(title)
-        getAllTasks('all')
+        try {
+            await addTask(title)
+            newTask.value = ''
+            emit('dataUpdated')
+        } catch (error) {
+            console.error('Error saving edit:', error)
+        }
     } else {
         errorMessage.value = 'XXX';
         setTimeout(() => {
@@ -20,9 +27,9 @@ async function addTaskAndRefresh(title:string) {
 </script>
 
 <template>
-    <form class="task-adder">
+    <form @submit.prevent="addTaskAndRefresh(newTask)" class="task-adder">
         <input type="text" class="add-input" v-model="newTask" id="task" name="task" placeholder="Task To Be Done...">
-        <button @click.prevent='addTaskAndRefresh(newTask)' class="add-button">Add</button>
+        <button type="submit" class="add-button">Add</button>
         <div v-if="errorMessage == 'XXX'" class="error-message">{{ errorMessage }}</div>
     </form>
 </template>
@@ -50,6 +57,7 @@ async function addTaskAndRefresh(title:string) {
     border: none;
     border-radius: 4px;
     padding: 4px;
+    cursor: pointer;
 }
 .error-message {
     color: black;
