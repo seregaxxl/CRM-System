@@ -4,7 +4,7 @@ import loaderComponent from '../components/loaderComponent.vue';
 import taskForm from '../components/taskForm.vue';
 import List from '../components/List.vue';
 import SideBar from '../components/SideBar.vue';
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, onBeforeUnmount } from 'vue';
 import { Filter } from '../types';
 
 import {getAllTasks} from '../api/index'
@@ -33,11 +33,16 @@ async function updateData () {
     }
 }
 
+let intervalId: number;
 
 onMounted(async () => {
     updateData()
+    intervalId = setInterval(updateData, 5000);
 })
 
+onBeforeUnmount(() => {
+  clearInterval(intervalId); // Clear interval when the component is destroyed
+});
 </script>
 
 <template>
