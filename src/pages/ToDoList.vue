@@ -2,19 +2,22 @@
 import navBar from '../components/navBar.vue';
 import loaderComponent from '../components/loaderComponent.vue';
 import taskForm from '../components/taskForm.vue';
-import toDoListInternal from '../components/toDoListInternal.vue';
+import List from '../components/List.vue';
+import SideBar from '../components/SideBar.vue';
 import { onMounted, ref } from 'vue';
+import { Filter } from '../types';
 
 import {getAllTasks} from '../api/index'
 import { AllTasks } from '../types'
 
 
+
 const tasks = ref<AllTasks>({info: { all: 0, completed: 0, inWork: 0 },
     data: [],})
 const isLoading = ref<boolean>(true)
-const activeTabLocal = ref('all')
+const activeTabLocal = ref<Filter>('all')
 
-function changeActiveTab (activeTab:string) {
+function changeActiveTab (activeTab:Filter) {
     activeTabLocal.value = activeTab; 
     updateData()
 }
@@ -38,12 +41,17 @@ onMounted(async () => {
 </script>
 
 <template>
-    <main class="main">
-        <loaderComponent v-if="isLoading"/>
+    <main>
+        <nav>
+            <SideBar/>
+        </nav>
         <section class="main">
-            <taskForm @dataUpdated="updateData"/>
-            <navBar :info="tasks.info" @activeTab="changeActiveTab"/>
-            <toDoListInternal :tasks="tasks.data" @dataUpdated="updateData"/>    
+            <a-flex :vertical="true" class="layout">
+                <taskForm @dataUpdated="updateData"/>
+                <navBar :info="tasks.info" @activeTab="changeActiveTab"/>
+                <List :tasks="tasks.data" @dataUpdated="updateData"/>    
+            </a-flex>
+            <loaderComponent v-if="isLoading"/>
         </section>
     </main>
 
@@ -51,6 +59,11 @@ onMounted(async () => {
 
 <style scoped>
 .main {
+    display: flex;
+    justify-content: center;
+}
+.layout {
+    margin: 0;
     background-color: #F1F4F9;
     padding: 20px;
 }

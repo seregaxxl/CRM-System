@@ -1,31 +1,29 @@
-const api = 'https://easydev.club/api/v1'
-const todos = '/todos'
+import { Filter, AllTasks } from "../types"
+const API = 'https://easydev.club/api/v1'
+const PREFIX_TODOS = '/todos'
+import axios from "axios"
+
 
 
 
 export async function addTask (title:string) {
     try {
-        const res = await fetch(api+todos, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                isDone: false, title: title
-            })
+        const res = await axios.post(API+PREFIX_TODOS, {
+            isDone: false, 
+            title: title
         })
-        if (!res.ok) throw new Error('Network response was not ok')
+        if (!res) throw new Error('Network response was not ok')
     } catch (error) {
         console.error('Error adding', error)
         throw error
     }
 }
 
-export async function getAllTasks (filter:string) {
+export async function getAllTasks (filter:Filter): Promise<AllTasks> {
     try {
-        const res = await fetch(`${api}${todos}?filter=${filter}`)
-        if (!res.ok) throw new Error('Network response was not ok')
-        const data = await res.json()
+        const res = await axios.get<AllTasks>(`${API}${PREFIX_TODOS}?filter=${filter}`)
+        if (!res) throw new Error('Network response was not ok')
+        const data: AllTasks = res.data
         console.log('Fetching ')
         return data
     } catch (error) {
@@ -34,23 +32,17 @@ export async function getAllTasks (filter:string) {
     } 
 }
 
-export async function updateTask (id:number, isDone?: boolean, title?: string ) {
+export async function updateTask (id:number, changedFields : {isDone?: boolean, title?: string} ) {
     try {
         const updatedFields : {isDone?:boolean, title?: string} = {}
-        if (isDone !== undefined) {
-            updatedFields.isDone = isDone
+        if (changedFields.isDone !== undefined) {
+            updatedFields.isDone = changedFields.isDone
         }
-        if (title !== undefined) {
-            updatedFields.title = title
+        if (changedFields.title !== undefined) {
+            updatedFields.title = changedFields.title
         }
-        const res = await fetch(`${api}${todos}/${id}`, {
-        method: 'PUT',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(updatedFields)
-        })
-        if (!res.ok) throw new Error('Network response was not ok')
+        const res = await axios.put(`${API}${PREFIX_TODOS}/${id}`, updatedFields)
+        if (!res) throw new Error('Network response was not ok')
     } catch (error) {
         console.error('Error adding', error)
         throw error
@@ -59,10 +51,8 @@ export async function updateTask (id:number, isDone?: boolean, title?: string ) 
 
 export async function deleteTask (id:number) {
     try {
-        const res = await fetch(`${api}${todos}/${id}`, {
-        method: 'DELETE'
-        })
-        if (!res.ok) throw new Error('Network response was not ok')
+        const res = await axios.delete(`${API}${PREFIX_TODOS}/${id}`)
+        if (!res) throw new Error('Network response was not ok')
     } catch (error) {
         console.error('Error adding', error)
         throw error

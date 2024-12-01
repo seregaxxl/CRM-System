@@ -1,31 +1,55 @@
 <script setup lang="ts">
 
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 import { TaskInfo } from '../types';
+import { MenuProps } from "ant-design-vue";
+import { Filter } from '../types';
 
-const emit = defineEmits(['activeTab'])
+interface Emits {
+  (event: 'activeTab', tab: Filter): void;
+}
+
+const emit = defineEmits<Emits>()
+
 const props = defineProps<{
   info: TaskInfo;
 }>();
-const activeTab = ref<string>('all')
-function changeActiveTab (filter:string) {
-  activeTab.value = filter
+
+const current = ref<(Filter)[]>(['all']);
+
+function changeActiveTab (filter:Filter) {
+  current.value[0] = filter
   emit('activeTab', filter)
 }
+
+const items = ref<MenuProps["items"]>([])
+
+watch(
+  () => props.info,
+  (newInfo) => {
+    if (newInfo) {
+      items.value = [
+        {
+          key: 'all',
+          label: `Все(${newInfo.all})`
+        },
+        {
+          key: 'inWork',
+          label: `в работе(${newInfo.inWork})`
+        },
+        {
+          key: 'completed',
+          label: `сделано(${newInfo.completed})`
+        },
+      ];
+    }
+  },
+  { immediate: true }
+);
 </script>
 
 <template>
-    <nav class="tasks-tabs-switcher">
-      <button class="switcher-button" :class="{ active: (activeTab === 'all') }" @click="changeActiveTab('all')">
-        Все({{ props.info.all}})
-      </button>
-      <button class="switcher-button" :class="{ active: (activeTab === 'inWork') }" @click="changeActiveTab('inWork')">
-        в работе({{props.info.inWork}})
-      </button>
-      <button class="switcher-button" :class="{ active: (activeTab === 'completed') }" @click="changeActiveTab('completed')">
-        сделано({{props.info.completed}})
-      </button>
-    </nav>
+  <a-menu v-model:selectedKeys="current" mode="horizontal" :items="items" @select="() => changeActiveTab(current[0])" />
 </template>
 
 <style scoped>
