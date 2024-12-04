@@ -1,18 +1,14 @@
 import { Filter, AllTasks } from "../types"
-const API = 'https://easydev.club/api/v1'
+import axiosInstance from './axiosInstance';
+
 const PREFIX_TODOS = '/todos'
-import axios from "axios"
-
-
-
 
 export async function addTask (title:string) {
     try {
-        const res = await axios.post(API+PREFIX_TODOS, {
+        await axiosInstance.post(PREFIX_TODOS, {
             isDone: false, 
             title: title
         })
-        if (!res) throw new Error('Network response was not ok')
     } catch (error) {
         console.error('Error adding', error)
         throw error
@@ -21,8 +17,9 @@ export async function addTask (title:string) {
 
 export async function getAllTasks (filter:Filter): Promise<AllTasks> {
     try {
-        const res = await axios.get<AllTasks>(`${API}${PREFIX_TODOS}?filter=${filter}`)
-        if (!res) throw new Error('Network response was not ok')
+        const res = await axiosInstance.get<AllTasks>(PREFIX_TODOS, {
+            params: { filter }
+        });
         const data: AllTasks = res.data
         console.log('Fetching ')
         return data
@@ -34,15 +31,7 @@ export async function getAllTasks (filter:Filter): Promise<AllTasks> {
 
 export async function updateTask (id:number, changedFields : {isDone?: boolean, title?: string} ) {
     try {
-        const updatedFields : {isDone?:boolean, title?: string} = {}
-        if (changedFields.isDone !== undefined) {
-            updatedFields.isDone = changedFields.isDone
-        }
-        if (changedFields.title !== undefined) {
-            updatedFields.title = changedFields.title
-        }
-        const res = await axios.put(`${API}${PREFIX_TODOS}/${id}`, updatedFields)
-        if (!res) throw new Error('Network response was not ok')
+        await axiosInstance.put(`${PREFIX_TODOS}/${id}`, changedFields)
     } catch (error) {
         console.error('Error adding', error)
         throw error
@@ -51,8 +40,7 @@ export async function updateTask (id:number, changedFields : {isDone?: boolean, 
 
 export async function deleteTask (id:number) {
     try {
-        const res = await axios.delete(`${API}${PREFIX_TODOS}/${id}`)
-        if (!res) throw new Error('Network response was not ok')
+        await axiosInstance.delete(`${PREFIX_TODOS}/${id}`)
     } catch (error) {
         console.error('Error adding', error)
         throw error

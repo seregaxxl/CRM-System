@@ -1,99 +1,124 @@
 <script lang="ts" setup>
 import { Task } from '../types'
-import { ref, watch } from 'vue';
-import { updateTask, deleteTask } from '../api';
-import editImg from '../assets/edit.png';
-import deleteImg from '../assets/delete.png';
-import saveImg from '../assets/save.png';
-import cancelImg from '../assets/cancel.png';
+// import { ref, watch, computed  } from 'vue';
+// import { updateTask, deleteTask } from '../api';
+// import editImg from '../assets/edit.png';
+// import deleteImg from '../assets/delete.png';
+// import saveImg from '../assets/save.png';
+// import cancelImg from '../assets/cancel.png';
+import ListItem from './ListItem.vue';
 
 const props = defineProps<{
   tasks: Task[];
 }>();
-const data = ref<Task[]>([]);
-const titleBuffer = ref<string>('')
-const editMode = ref<number[]>([])
+// const data = ref<Task[]>([]);
+// const titleBuffer = ref<string>('')
+// const editMode = ref<number[]>([])
+// const emit = defineEmits(['dataUpdated'])
+
+// const isEditing = computed(() => {
+//   return (id: number) => editMode.value.includes(id);
+// });
+
+
+// async function updateTaskAndEmit(id:number,isDone?:boolean, title?:string) {
+//   try {
+//     await updateTask(id, {isDone, title})
+//     emit('dataUpdated')
+//   } catch (error) {
+//     console.error('Error saving edit:', error)
+//   }
+// }
+
+// async function deleteTaskAndRefresh(id:number) {
+//   try {
+//     await deleteTask(id)
+//     emit('dataUpdated')
+//   } catch (error) {
+//     console.error('Error saving edit:', error)
+//   } 
+// }
+
+// async function saveEdit (id:number, title:string) {
+//     if (data.value.find(task => task.id === id)) {
+//         try {
+//         await updateTaskAndEmit(id, undefined, title)
+//         editMode.value = editMode.value.filter(editingId => editingId !== id);;
+//         } catch (error) {
+//         console.error('Error saving edit:', error)
+//         }
+//     }
+// }
+
+// function toggleOnEdit (id:number, title:string) {
+//     editMode.value.push(id);
+//     titleBuffer.value = title;
+// }
+
+// function toggleOffEdit (id:number) {
+//     editMode.value = editMode.value.filter(editingId => editingId !== id);;
+//     titleBuffer.value = '';
+// }
+
+// watch(
+//   () => props.tasks,
+//   (newInfo) => {
+//     if (newInfo) {
+//         data.value = [...newInfo]
+//         }
+//     },
+//   {immediate: true }
+// );
+
 const emit = defineEmits(['dataUpdated'])
-
-async function updateTaskAndRefresh(id:number,isDone?:boolean, title?:string) {
-  try {
-    await updateTask(id, {isDone, title})
+function refresh() {
     emit('dataUpdated')
-  } catch (error) {
-    console.error('Error saving edit:', error)
-  }
 }
-
-async function deleteTaskAndRefresh(id:number) {
-  try {
-    await deleteTask(id)
-    emit('dataUpdated')
-  } catch (error) {
-    console.error('Error saving edit:', error)
-  } 
-}
-
-async function saveEdit (id:number, title:string) {
-    if (data.value.find(task => task.id === id)) {
-        try {
-        await updateTaskAndRefresh(id, undefined, title)
-        editMode.value = editMode.value.filter(editingId => editingId !== id);;
-        } catch (error) {
-        console.error('Error saving edit:', error)
-        }
-    }
-}
-
-function toggleOnEdit (id:number, title:string) {
-    editMode.value.push(id);
-    titleBuffer.value = title;
-}
-
-function toggleOffEdit (id:number) {
-    editMode.value = editMode.value.filter(editingId => editingId !== id);;
-    titleBuffer.value = '';
-}
-
-watch(
-  () => props.tasks,
-  (newInfo) => {
-    if (newInfo) {
-        data.value = [...newInfo]
-        }
-    },
-  {immediate: true }
-);
 </script>
 
 <template>
     <a-list
       class="todo-list"
       item-layout="horizontal"
-      :data-source="data"
     >
-      <template #renderItem="{ item }">
-        <a-list-item class="listItem">
-          <template #actions>
-            <a-button @click="()=>saveEdit(item.id, titleBuffer)" v-if="editMode.find(editId => editId === item.id)" key="todo-list-save"><img :src="saveImg" alt="Save" /></a-button>
-            <a-button @click="()=>toggleOnEdit(item.id, item.title)" v-else key="todo-list-edit"><img :src=editImg alt=""></a-button>
-            <a-button @click="()=>toggleOffEdit(item.id)" v-if="editMode.find(editId => editId === item.id)" key="todo-list-cancel"><img :src="cancelImg" alt="Cancel" /></a-button>
-            <a-button @click="()=>deleteTaskAndRefresh(item.id)" v-else key="todo-list-delete"><img :src=deleteImg alt=""></a-button>
-          </template>
-          <a-skeleton active :loading="false">
-            <div v-if="editMode.find(editId => editId === item.id)">
-                <input type="text" v-model="titleBuffer" />
-            </div>
-            <div v-else class="checkboxAndTitle">
-                <input :id="'checkbox-' + item.id" class="checkbox" @change="updateTaskAndRefresh(item.id, item.isDone)" type="checkbox" :checked="item.isDone">
-                <div :class="{taskDoneClass: (item.isDone)}">{{ item.title }}</div>
-            </div>
-          </a-skeleton>
-        </a-list-item>
-      </template>
+    <ListItem
+      v-for="task in props.tasks"
+      :key="task.id"
+      :task="task"
+      @dataUpdated="refresh"
+    />
     </a-list>
   </template>
 
-  <style scoped>
+<!-- <template>
+  <a-list
+    class="todo-list"
+    item-layout="horizontal"
+    :data-source="data"
+  >
+    <template #renderItem="{ item }">
+      <a-list-item class="listItem">
+        <template #actions>
+          <a-button @click="()=>saveEdit(item.id, titleBuffer)" v-if="isEditing(item.id)" key="todo-list-save"><img :src="saveImg" alt="Save" /></a-button>
+          <a-button @click="()=>toggleOnEdit(item.id, item.title)" v-else key="todo-list-edit"><img :src=editImg alt=""></a-button>
+          <a-button @click="()=>toggleOffEdit(item.id)" v-if="isEditing(item.id)" key="todo-list-cancel"><img :src="cancelImg" alt="Cancel" /></a-button>
+          <a-button @click="()=>deleteTaskAndRefresh(item.id)" v-else key="todo-list-delete"><img :src=deleteImg alt=""></a-button>
+        </template>
+        <a-skeleton active :loading="false">
+          <div v-if="isEditing(item.id)">
+              <input type="text" v-model="titleBuffer" />
+          </div>
+          <div v-else class="checkboxAndTitle">
+              <input :id="'checkbox-' + item.id" class="checkbox" @change="updateTaskAndEmit(item.id, item.isDone)" type="checkbox" :checked="item.isDone">
+              <div :class="{taskDoneClass: (item.isDone)}">{{ item.title }}</div>
+          </div>
+        </a-skeleton>
+      </a-list-item>
+    </template>
+  </a-list>
+</template> -->
+
+<style scoped>
 .editButtons {
   background-color: #fff;
   border: none;
