@@ -1,10 +1,14 @@
 <script setup lang="ts">
-
 </script>
 
 <template>
   <router-view/>
 </template>
 
-<style scoped>
+<style>
+* {
+padding: 0;
+margin: 0;
+box-sizing: content-box;
+}
 </style>
