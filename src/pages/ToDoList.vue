@@ -37,7 +37,7 @@ let intervalId: number;
 
 onMounted(async () => {
     updateData()
-    intervalId = setInterval(updateData, 5000);
+    intervalId = setInterval(updateData, 50000);
 })
 
 onBeforeUnmount(() => {

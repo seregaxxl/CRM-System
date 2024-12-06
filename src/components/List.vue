@@ -1,96 +1,77 @@
 <script lang="ts" setup>
 import { Task } from '../types'
-// import { ref, watch, computed  } from 'vue';
-// import { updateTask, deleteTask } from '../api';
-// import editImg from '../assets/edit.png';
-// import deleteImg from '../assets/delete.png';
-// import saveImg from '../assets/save.png';
-// import cancelImg from '../assets/cancel.png';
-import ListItem from './ListItem.vue';
+import { ref, watch, computed  } from 'vue';
+import { updateTask, deleteTask } from '../api';
+import editImg from '../assets/edit.png';
+import deleteImg from '../assets/delete.png';
+import saveImg from '../assets/save.png';
+import cancelImg from '../assets/cancel.png';
 
 const props = defineProps<{
   tasks: Task[];
 }>();
-// const data = ref<Task[]>([]);
-// const titleBuffer = ref<string>('')
-// const editMode = ref<number[]>([])
-// const emit = defineEmits(['dataUpdated'])
-
-// const isEditing = computed(() => {
-//   return (id: number) => editMode.value.includes(id);
-// });
-
-
-// async function updateTaskAndEmit(id:number,isDone?:boolean, title?:string) {
-//   try {
-//     await updateTask(id, {isDone, title})
-//     emit('dataUpdated')
-//   } catch (error) {
-//     console.error('Error saving edit:', error)
-//   }
-// }
-
-// async function deleteTaskAndRefresh(id:number) {
-//   try {
-//     await deleteTask(id)
-//     emit('dataUpdated')
-//   } catch (error) {
-//     console.error('Error saving edit:', error)
-//   } 
-// }
-
-// async function saveEdit (id:number, title:string) {
-//     if (data.value.find(task => task.id === id)) {
-//         try {
-//         await updateTaskAndEmit(id, undefined, title)
-//         editMode.value = editMode.value.filter(editingId => editingId !== id);;
-//         } catch (error) {
-//         console.error('Error saving edit:', error)
-//         }
-//     }
-// }
-
-// function toggleOnEdit (id:number, title:string) {
-//     editMode.value.push(id);
-//     titleBuffer.value = title;
-// }
-
-// function toggleOffEdit (id:number) {
-//     editMode.value = editMode.value.filter(editingId => editingId !== id);;
-//     titleBuffer.value = '';
-// }
-
-// watch(
-//   () => props.tasks,
-//   (newInfo) => {
-//     if (newInfo) {
-//         data.value = [...newInfo]
-//         }
-//     },
-//   {immediate: true }
-// );
-
+const data = ref<Task[]>([]);
+const titleBuffer = ref<string>('')
+const editMode = ref<number[]>([])
 const emit = defineEmits(['dataUpdated'])
-function refresh() {
+
+const isEditing = computed(() => {
+  return (id: number) => editMode.value.includes(id);
+});
+
+
+async function updateTaskAndEmit(id:number,isDone?:boolean, title?:string) {
+  try {
+    await updateTask(id, {isDone, title})
     emit('dataUpdated')
+  } catch (error) {
+    console.error('Error saving edit:', error)
+  }
 }
+
+async function deleteTaskAndRefresh(id:number) {
+  try {
+    await deleteTask(id)
+    emit('dataUpdated')
+  } catch (error) {
+    console.error('Error saving edit:', error)
+  } 
+}
+
+async function saveEdit (id:number, title:string) {
+    if (data.value.find(task => task.id === id)) {
+        try {
+        await updateTaskAndEmit(id, undefined, title)
+        editMode.value = editMode.value.filter(editingId => editingId !== id);;
+        } catch (error) {
+        console.error('Error saving edit:', error)
+        }
+    }
+}
+
+function toggleOnEdit (id:number, title:string) {
+    editMode.value.push(id);
+    titleBuffer.value = title;
+}
+
+function toggleOffEdit (id:number) {
+    editMode.value = editMode.value.filter(editingId => editingId !== id);;
+    titleBuffer.value = '';
+}
+
+watch(
+  () => props.tasks,
+  (newInfo) => {
+    if (newInfo) {
+        data.value = [...newInfo]
+        }
+    },
+  {immediate: true }
+);
+
 </script>
 
 <template>
-    <a-list
-      class="todo-list"
-      item-layout="horizontal"
-    >
-    <ListItem
-      v-for="task in props.tasks"
-      :key="task.id"
-      :task="task"
-      @dataUpdated="refresh"
-    />
-    </a-list>
-  </template>
-
-<!-- <template>
   <a-list
     class="todo-list"
     item-layout="horizontal"
@@ -109,14 +90,14 @@ function refresh() {
               <input type="text" v-model="titleBuffer" />
           </div>
           <div v-else class="checkboxAndTitle">
-              <input :id="'checkbox-' + item.id" class="checkbox" @change="updateTaskAndEmit(item.id, item.isDone)" type="checkbox" :checked="item.isDone">
+              <input :id="'checkbox-' + item.id" class="checkbox" @change="updateTaskAndEmit(item.id, !item.isDone)" type="checkbox" :checked="item.isDone">
               <div :class="{taskDoneClass: (item.isDone)}">{{ item.title }}</div>
           </div>
         </a-skeleton>
       </a-list-item>
     </template>
   </a-list>
-</template> -->
+</template>
 
 <style scoped>
 .editButtons {

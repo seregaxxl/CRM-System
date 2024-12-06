@@ -31,7 +31,8 @@ export async function getAllTasks (filter:Filter): Promise<AllTasks> {
 
 export async function updateTask (id:number, changedFields : {isDone?: boolean, title?: string} ) {
     try {
-        await axiosInstance.put(`${PREFIX_TODOS}/${id}`, changedFields)
+       const res = await axiosInstance.put(`${PREFIX_TODOS}/${id}`, changedFields)
+       console.log(res)
     } catch (error) {
         console.error('Error adding', error)
         throw error
