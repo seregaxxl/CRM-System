@@ -1,58 +1,30 @@
 <script setup lang="ts">
-import {addTask} from '../api/index'
-import { reactive } from 'vue';
-import type { Rule } from 'ant-design-vue/es/form';
+import { ref } from 'vue';
+import {addTask, getAllTasks} from '../api/index'
 
-interface FormState {
-  task: string
-}
-
-const formState = reactive<FormState>({
-    task: '',
-});
-
-const rules: Record<string, Rule[]> = {
-    task: [
-        { min:2, max:64, message:'Lenght should be from 2 to 64', trigger: 'blur' } 
-    ]
-}
-
-const emit = defineEmits(['dataUpdated'])
+const newTask = ref('')
+const errorMessage = ref('');
 
 async function addTaskAndRefresh(title:string) {
-    try {
-            await addTask(title)
-            formState.task = ''
-            emit('dataUpdated')
-        } catch (error) {
-            console.error('Error saving edit:', error)
-        }
+    if (title.length < 64 && title.length > 2) {
+        await addTask(title)
+        getAllTasks('all')
+    } else {
+        errorMessage.value = 'XXX';
+        setTimeout(() => {
+            errorMessage.value = '';
+        }, 2000);
+    }
 }
 
 </script>
+
 <template>
-    <a-form
-        :model="formState" 
-        :rules="rules"
-        name="task-adder"
-        class="task-adder"
-        autocomplete="off"
-        @finish="() => addTaskAndRefresh(formState.task)"
-    >
-    <!-- addTaskAndRefresh(e.target.form.querySelector('input[name=`task`]').value)" -->
-        <a-form-item
-        name="task"
-        >
-            <a-input
-                class="add-input"
-                v-model:value="formState.task"
-                placeholder="Task To Be Done..."
-            />
-        </a-form-item>
-        <a-form-item>
-            <a-button type="primary" html-type="submit" class="add-button">Add</a-button>
-        </a-form-item>
-    </a-form>
+    <form class="task-adder">
+        <input type="text" class="add-input" v-model="newTask" id="task" name="task" placeholder="Task To Be Done...">
+        <button @click.prevent='addTaskAndRefresh(newTask)' class="add-button">Add</button>
+        <div v-if="errorMessage == 'XXX'" class="error-message">{{ errorMessage }}</div>
+    </form>
 </template>
 
 <style scoped>
@@ -60,13 +32,12 @@ async function addTaskAndRefresh(title:string) {
     margin: auto;
     width: 260px;
     padding: 10px;
-    display: flex;
 }
 .add-input {
     outline: 0;
     border-width: 0 0 2px;
     height: 26px;
-    width: 140px;
+    width: 160px;
     margin: 0 4px 0 6px;
     background-color: #F1F4F9;
     color: #2c3e50;
@@ -79,7 +50,6 @@ async function addTaskAndRefresh(title:string) {
     border: none;
     border-radius: 4px;
     padding: 4px;
-    cursor: pointer;
 }
 .error-message {
     color: black;
