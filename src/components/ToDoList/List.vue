@@ -1,11 +1,11 @@
 <script lang="ts" setup>
-import { Task } from '../types'
+import { Task } from '../../types/tasksTypes'
 import { ref, watch, computed  } from 'vue';
-import { updateTask, deleteTask } from '../api';
-import editImg from '../assets/edit.png';
-import deleteImg from '../assets/delete.png';
-import saveImg from '../assets/save.png';
-import cancelImg from '../assets/cancel.png';
+import { updateTask, deleteTask } from '../../api';
+import editImg from '../../assets/edit.png';
+import deleteImg from '../../assets/delete.png';
+import saveImg from '../../assets/save.png';
+import cancelImg from '../../assets/cancel.png';
 
 const props = defineProps<{
   tasks: Task[];
@@ -68,7 +68,6 @@ watch(
     },
   {immediate: true }
 );
-
 </script>
 
 <template>

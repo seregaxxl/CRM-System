@@ -1,14 +1,14 @@
 <script setup lang="ts">
-import navBar from '../components/navBar.vue';
-import loaderComponent from '../components/loaderComponent.vue';
-import taskForm from '../components/taskForm.vue';
-import List from '../components/List.vue';
-import SideBar from '../components/SideBar.vue';
+import navBar from '../components/ToDoList/navBar.vue';
+import loaderComponent from '../components/common/loaderComponent.vue';
+import taskForm from '../components/ToDoList/taskForm.vue';
+import List from '../components/ToDoList/List.vue';
+import SideBar from '../components/common/SideBar.vue';
 import { onMounted, ref, onBeforeUnmount } from 'vue';
-import { Filter } from '../types';
+import { Filter } from '../types/tasksTypes';
 
 import {getAllTasks} from '../api/index'
-import { AllTasks } from '../types'
+import { AllTasks } from '../types/tasksTypes'
 
 
 
@@ -41,25 +41,34 @@ onMounted(async () => {
 })
 
 onBeforeUnmount(() => {
-  clearInterval(intervalId); // Clear interval when the component is destroyed
+  clearInterval(intervalId); 
 });
 </script>
 
 <template>
     <main>
-        <nav>
-            <SideBar/>
-        </nav>
-        <section class="main">
-            <a-flex :vertical="true" class="layout">
-                <taskForm @dataUpdated="updateData"/>
-                <navBar :info="tasks.info" @activeTab="changeActiveTab"/>
-                <List :tasks="tasks.data" @dataUpdated="updateData"/>    
-            </a-flex>
-            <loaderComponent v-if="isLoading"/>
-        </section>
+        <a-config-provider
+                :theme="{
+                token: {
+                    colorPrimary: '#7F265B',
+                },
+                }"
+            >
+            <nav>
+                <SideBar/>
+            </nav>
+            <section class="main">
+                
+                <a-flex :vertical="true" class="layout">
+                    <taskForm @dataUpdated="updateData"/>
+                    <navBar :info="tasks.info" @activeTab="changeActiveTab"/>
+                    <List :tasks="tasks.data" @dataUpdated="updateData"/>    
+                </a-flex>
+                <loaderComponent v-if="isLoading"/>
+            
+            </section>
+        </a-config-provider>
     </main>
-
 </template>
 
 <style scoped>

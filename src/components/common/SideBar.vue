@@ -13,7 +13,7 @@ const route = useRoute()
 
 function onSelectMenu({ key }: { key: string }) {
   if (key === '1') {
-    router.push('/'); 
+    router.push('/ToDoList'); 
   } else if (key === '2') {
     router.push('/Profile'); 
   }
@@ -42,9 +42,9 @@ const items: ItemType[] = reactive([
 
 watchEffect(() => {
   if (route.path === '/') {
-    state.selectedKeys = ['1']; // Set to ToDo List
+    state.selectedKeys = ['1']; 
   } else if (route.path === '/Profile') {
-    state.selectedKeys = ['2']; // Set to Profile
+    state.selectedKeys = ['2']; 
   }
 });
 
