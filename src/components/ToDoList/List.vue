@@ -130,6 +130,11 @@ button.active {
     text-decoration: underline;
     font-weight: bold;
 }
+
+.todo-list {
+  min-width: 300px;
+}
+
 .listItem {
   margin-bottom: 10px;
   background-color: #fff;
@@ -168,7 +173,7 @@ button.active {
 .checkbox:checked {
   width: 20px;
   height: 20px;
-  background-image: url('../assets/blueMark.png');
+  background-image: url('../../assets/blueMark.png');
   background-position: center;
   background-repeat: no-repeat;
   background-size: cover;

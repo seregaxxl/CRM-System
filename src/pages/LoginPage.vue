@@ -2,13 +2,38 @@
 import LoginLayout from '../components/LoginPage/LoginLayout.vue';
 import SignUpLayout from '../components/LoginPage/SignUpLayout.vue';
 import bgImg from '../assets/bg-image-login.png'
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue';
+import { useRouter } from 'vue-router';
+import { useTokensStore } from '../stores/loginStore';
 
+const authStore = useTokensStore()
+const router = useRouter()
 const login = ref<boolean>(true)
 
 function loginPage(value:boolean=true) {
     login.value = value
 }
+
+async function checkLogin () {
+    if (localStorage.refreshToken) {
+    try {
+        const success = await authStore.refreshAccessToken();
+        console.log(success)
+        if (success) {
+        console.log('ser')
+        router.push('/Profile'); 
+    } else {
+        router.push('/');
+    }
+        } catch(e) {
+            router.push('/');
+        } 
+    }
+}
+
+onMounted(() => {
+    checkLogin()
+})
 
 </script>
 <template>

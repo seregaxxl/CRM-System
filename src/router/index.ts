@@ -20,7 +20,7 @@ router.beforeEach(async (to, _, next) => {
   const authStore = useTokensStore();
 
   if (to.meta.requiresAuth) {
-    if (!authStore.accessToken) {
+    if (!localStorage.accessToken) {
       try {
         const res = await authStore.refreshAccessToken();
         if (res) {

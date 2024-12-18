@@ -13,7 +13,7 @@
     password: string;
     remember: boolean;
   }
-  
+   
   const formState = reactive<FormState>({
     login: '',
     password: '',
@@ -21,7 +21,11 @@
   });
   const onFinish = async (values: LoginData) => {
     const res = await signIn(values)
-    store.$state = res.data
+    if (formState.remember) {
+      store.setTokensSave(res.data.accessToken, res.data.refreshToken)
+    } else {
+      store.setTokens(res.data.accessToken, res.data.refreshToken)
+    }
     console.log('store:', store.$state)
     router.push('/Profile')
   };  

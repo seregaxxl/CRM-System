@@ -2,14 +2,22 @@
 import { reactive, watchEffect } from 'vue';
 import { ItemType } from 'ant-design-vue';
 import { useRouter, useRoute } from 'vue-router';
+import { signOut } from '../../api';
 
 const state = reactive({
   selectedKeys: ['1'],
   openKeys: ['sub1'],
 });
 
+const accessToken = localStorage.getItem('accessToken')
+
 const router = useRouter()
 const route = useRoute()
+
+function logOut() {
+  signOut(accessToken)
+  router.push('/')
+}
 
 function onSelectMenu({ key }: { key: string }) {
   if (key === '1') {
@@ -51,7 +59,7 @@ watchEffect(() => {
 </script>
 
 <template>
-    <div>
+    <div class="side-menu-container">
       <a-menu
         v-model:openKeys="state.openKeys"
         v-model:selectedKeys="state.selectedKeys"
@@ -60,6 +68,18 @@ watchEffect(() => {
         @select="onSelectMenu"
       ></a-menu>
     </div>
+    <div class="logout">
+        <button @click="logOut">Logout</button>
+      </div>
 </template>
 
+
+<style scoped>
+
+.logout {
+  position: absolute;
+  bottom: 15px;
+  left: 15px;
+}
+</style>
   

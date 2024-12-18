@@ -7,6 +7,7 @@ const PREFIX_AUTH = '/auth'
 const PREFIX_USR = '/user'
 const POSTFIX_SIGNUP = '/signup'
 const POSTFIX_SIGNIN = '/signin'
+const POSTFIX_SIGNOUT = '/logout'
 const POSTFIX_REFRESH = '/refresh'
 const POSTFIX_PROFILE = '/profile'
 
@@ -58,7 +59,7 @@ export async function deleteTask (id:number) {
 
 export async function signUp (userData: UserData) {
     try {
-        const res = await axiosInstance.post(`${PREFIX_AUTH}/${POSTFIX_SIGNUP}`, userData);
+        const res = await axiosInstance.post(`${PREFIX_AUTH}${POSTFIX_SIGNUP}`, userData);
         return res
     } catch (error: any) {
         return error
@@ -67,16 +68,31 @@ export async function signUp (userData: UserData) {
 
 export async function signIn (loginData: LoginData) {
     try {
-        const res = await axiosInstance.post(`${PREFIX_AUTH}/${POSTFIX_SIGNIN}`, loginData);
+        const res = await axiosInstance.post(`${PREFIX_AUTH}${POSTFIX_SIGNIN}`, loginData);
         return res
     } catch (error: any) {
         return error
     }
 }
 
-export async function refreshToken (refreshToken:string) {
+export async function signOut (accessToken:string|null) {
     try {
-        const res = await axiosInstance.post(`${PREFIX_AUTH}/${POSTFIX_REFRESH}`, {refreshToken});
+        await axiosInstance.post(`${PREFIX_USR}${POSTFIX_SIGNOUT}`,{},{
+            headers: {
+                Authorization: `Bearer ${accessToken}`,
+              }
+            });
+        return true
+    } catch (error: any) {
+        return error
+    }
+}
+
+
+
+export async function refreshToken (refreshToken: string) {
+    try {
+        const res = await axiosInstance.post(`${PREFIX_AUTH}${POSTFIX_REFRESH}`, {refreshToken});
         return res
     } catch (error: any) {
         return error

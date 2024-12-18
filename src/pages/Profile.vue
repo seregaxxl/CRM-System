@@ -10,7 +10,7 @@ const authStore = useTokensStore()
 const profileData = ref<UserData | null>(null)
 const fetchProfileData = async ():Promise<void> => {
   try {
-    const res = await refreshProfile(authStore.accessToken)
+    const res = await refreshProfile(authStore.accessToken ? authStore.accessToken : '')
     profileData.value = res.data
   } catch (error) {
     console.error('Failed to fetch profile data', error);
