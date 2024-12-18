@@ -1,4 +1,5 @@
 <script setup lang="ts">
+
 </script>
 
 <template>
@@ -10,5 +11,8 @@
 padding: 0;
 margin: 0;
 box-sizing: content-box;
+}
+#app {
+  height: 100%;
 }
 </style>
