@@ -1,20 +1,14 @@
 <script lang="ts" setup>
-import CreateForm from './CreateForm.vue'
-import logo from '../../assets/loginLogo.png'
+import CreateForm from '../components/SignUpPage/CreateForm.vue'
+import logo from '../assets/loginLogo.png'
+import { useRouter } from 'vue-router';
 
-interface Emits {
-  (event: 'created', login: boolean): void;
+const router = useRouter()
+
+function toLogin () {
+    router.push({ name: 'Login' })
 }
 
-const emit = defineEmits<Emits>()
-
-function created () {
-    emit('created', false)
-}
-
-function back () {
-    emit('created', true)
-}
 </script>
 <template>
     <section class="signup">
@@ -26,13 +20,14 @@ function back () {
                 <h1>Create an Account</h1>
             </div>
         </div>
-        <CreateForm @created="created" />
-        <a href="#" @click="back" > Back to login</a>
+        <CreateForm @created="toLogin" />
+        <router-link :to="{ name: 'Login' }">Back to login</router-link>
     </section>
 </template>
 <style scoped>
 .signup {
-    margin-top: 40px;
+    margin: auto;
+    margin-top: 20px;
     color: #525252;
 }
 .login-header {

@@ -1,14 +1,28 @@
 import { createMemoryHistory, createRouter } from 'vue-router';
-import { useTokensStore } from '../stores/loginStore';
-
+import authModule from '../api/auth';
+import loginLayout from '../layouts/loginLayout.vue';
+import appLayout from '../layouts/appLayout.vue';
 import ToDoList from '../pages/ToDoList.vue';
 import Profile from '../pages/Profile.vue';
 import LoginPage from '../pages/LoginPage.vue';
+import SignUpPage from '../pages/SignUpPage.vue';
 
 const routes = [
-  { path: '/', component: LoginPage },
-  { path: '/Profile', component: Profile, meta: { requiresAuth: true } },
-  { path: '/ToDoList', component: ToDoList, meta: { requiresAuth: true } },
+  { path: '/login', 
+    component: loginLayout,
+    children: [
+      { path: '', name: 'Login', component: LoginPage},
+      { path: 'create', name: 'SignUp', component: SignUpPage},
+    ], meta: { requiresAuth: false }
+  },
+  { path: '/',
+    component: appLayout,
+    children: [
+      { path: '', name: 'ToDoList', component: ToDoList},
+      { path: '/profile', name: 'Profile', component: Profile},
+    ],
+    meta: { requiresAuth: true } 
+  },
 ];
 
 export const router = createRouter({
@@ -17,22 +31,21 @@ export const router = createRouter({
 });
 
 router.beforeEach(async (to, _, next) => {
-  const authStore = useTokensStore();
-
   if (to.meta.requiresAuth) {
-    if (!localStorage.accessToken) {
+    const accessToken = authModule.getAccessToken()
+    if (accessToken) {
+      next();
+    } else {
       try {
-        const res = await authStore.refreshAccessToken();
+        const res = await authModule.refreshAccessToken(sessionStorage.refreshToken);
         if (res) {
           next(); 
         } else {
-          next('/'); 
+          next({ name: 'Login' }); 
         }
       } catch {
-        next('/'); 
+        next({ name: 'Login' }); 
       }
-    } else {
-      next(); 
     }
   } else {
     next(); 

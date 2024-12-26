@@ -5,11 +5,6 @@ import { UserData, LoginData } from "../types/authTypes";
 const PREFIX_TODOS = '/todos'
 const PREFIX_AUTH = '/auth'
 const PREFIX_USR = '/user'
-const POSTFIX_SIGNUP = '/signup'
-const POSTFIX_SIGNIN = '/signin'
-const POSTFIX_SIGNOUT = '/logout'
-const POSTFIX_REFRESH = '/refresh'
-const POSTFIX_PROFILE = '/profile'
 
 
 export async function addTask (title:string) {
@@ -59,32 +54,32 @@ export async function deleteTask (id:number) {
 
 export async function signUp (userData: UserData) {
     try {
-        const res = await axiosInstance.post(`${PREFIX_AUTH}${POSTFIX_SIGNUP}`, userData);
+        const res = await axiosInstance.post(`${PREFIX_AUTH}/signup`, userData);
         return res
     } catch (error: any) {
-        return error
+        throw error
     }
 }
 
 export async function signIn (loginData: LoginData) {
     try {
-        const res = await axiosInstance.post(`${PREFIX_AUTH}${POSTFIX_SIGNIN}`, loginData);
+        const res = await axiosInstance.post(`${PREFIX_AUTH}/signin`, loginData);
         return res
     } catch (error: any) {
-        return error
+        throw error
     }
 }
 
 export async function signOut (accessToken:string|null) {
     try {
-        await axiosInstance.post(`${PREFIX_USR}${POSTFIX_SIGNOUT}`,{},{
+        await axiosInstance.post(`${PREFIX_USR}/logout`,{},{
             headers: {
                 Authorization: `Bearer ${accessToken}`,
               }
             });
         return true
     } catch (error: any) {
-        return error
+        throw error
     }
 }
 
@@ -92,23 +87,23 @@ export async function signOut (accessToken:string|null) {
 
 export async function refreshToken (refreshToken: string) {
     try {
-        const res = await axiosInstance.post(`${PREFIX_AUTH}${POSTFIX_REFRESH}`, {refreshToken});
+        const res = await axiosInstance.post(`${PREFIX_AUTH}/refresh`, {refreshToken});
         return res
     } catch (error: any) {
-        return error
+        throw error
     }
 }
 
 export async function refreshProfile (accessToken: string) {
     try {
-        const res = await axiosInstance.get(`${PREFIX_USR}/${POSTFIX_PROFILE}`,{
+        const res = await axiosInstance.get(`${PREFIX_USR}/profile`,{
             headers: {
                 Authorization: `Bearer ${accessToken}`,
               }
             });
         return res
     } catch (error: any) {
-        return error
+        throw error
     }
 }
 

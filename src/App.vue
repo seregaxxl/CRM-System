@@ -1,9 +1,16 @@
 <script setup lang="ts">
-
 </script>
 
 <template>
-  <router-view/>
+  <a-config-provider
+        :theme="{
+        token: {
+            colorPrimary: '#7F265B',
+        },
+        }"
+    > 
+    <router-view/>
+  </a-config-provider>
 </template>
 
 <style>
@@ -13,6 +20,6 @@ margin: 0;
 box-sizing: content-box;
 }
 #app {
-  height: 100%;
+  height: 100vh;
 }
 </style>

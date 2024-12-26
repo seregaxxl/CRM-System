@@ -1,19 +1,10 @@
 <script lang="ts" setup>
-interface Emits {
-  (event: 'created', login: boolean): void;
-}
-
-const emit = defineEmits<Emits>()
-
-function created () {
-    emit('created', true)
-}
 </script>
 <template>
     <section class="create-account">
         <div>
             <span class="not-registered"> Not registered Yet?</span>
-            <a @click="created" href="#"> Create an account</a>
+            <router-link :to="{ name: 'SignUp' }">Create an account</router-link>
         </div>
     </section>
 </template>
@@ -24,8 +15,7 @@ function created () {
 .not-registered {
     color: #525252;
 }
-a {
-    color: #7F265B;
-    text-decoration: none;
+span {
+margin-right: 10px;
 }
 </style>

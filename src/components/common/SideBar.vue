@@ -2,56 +2,48 @@
 import { reactive, watchEffect } from 'vue';
 import { ItemType } from 'ant-design-vue';
 import { useRouter, useRoute } from 'vue-router';
-import { signOut } from '../../api';
+import authModule from '../../api/auth';
 
 const state = reactive({
   selectedKeys: ['1'],
   openKeys: ['sub1'],
 });
 
-const accessToken = localStorage.getItem('accessToken')
-
 const router = useRouter()
 const route = useRoute()
 
 function logOut() {
-  signOut(accessToken)
-  router.push('/')
+  authModule.signOut()
+  router.push({ name: 'Login' })
 }
 
 function onSelectMenu({ key }: { key: string }) {
   if (key === '1') {
-    router.push('/ToDoList'); 
+    router.push({ name: 'ToDoList' }); 
   } else if (key === '2') {
-    router.push('/Profile'); 
+    router.push({ name: 'Profile' }); 
   }
 }
 
 function getItem(
   label: string,
   key: string,
-  icon?: any,
-  children?: ItemType[],
-  type?: 'group',
 ): ItemType {
   return {
     key,
-    icon,
-    children,
-    label,
-    type,
+    label
   } as ItemType;
 }
 
 const items: ItemType[] = reactive([
-  getItem('ToDo List', '1'),
-  getItem('Profile', '2')
+  getItem('toDo List', '1'),
+  getItem('profile', '2')
 ]);
 
 watchEffect(() => {
   if (route.path === '/') {
     state.selectedKeys = ['1']; 
-  } else if (route.path === '/Profile') {
+  } else if (route.path === '/profile') {
     state.selectedKeys = ['2']; 
   }
 });

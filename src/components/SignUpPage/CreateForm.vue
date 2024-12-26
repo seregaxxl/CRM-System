@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { reactive, ref } from 'vue';
-import { signUp } from '../../api';
+import authModule from '../../api/auth';
 import { RegStatus } from '../../types/authTypes';
 
 interface Emits {
@@ -37,7 +37,7 @@ const formState = reactive<FormState>({
 
 const  onFinish = async (values: any) => {
     const {passwordRepeat, ...req} = values;
-    const res:any = await signUp(req);
+    const res:any = await authModule.signUp(req);
     if (res.status == 201) {
       popUp('ok')
     } else if (res.response.status === 400) {

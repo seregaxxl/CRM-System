@@ -1,11 +1,9 @@
 <script lang="ts" setup>
   import { reactive } from 'vue';
   import { useRouter } from 'vue-router';
-  import { signIn } from '../../api';
+  import authModule from '../../api/auth';
   import { LoginData } from '../../types/authTypes';
-  import { useTokensStore } from '../../stores/loginStore';
 
-  const store = useTokensStore()
   const router = useRouter()
   
   interface FormState {
@@ -20,14 +18,11 @@
     remember: true,
   });
   const onFinish = async (values: LoginData) => {
-    const res = await signIn(values)
+    const res = await authModule.signIn(values)
     if (formState.remember) {
-      store.setTokensSave(res.data.accessToken, res.data.refreshToken)
-    } else {
-      store.setTokens(res.data.accessToken, res.data.refreshToken)
+      sessionStorage['refreshToken'] = res.refreshToken;
     }
-    console.log('store:', store.$state)
-    router.push('/Profile')
+    router.push('/')
   };  
   
   const onFinishFailed = (errorInfo: any) => {
