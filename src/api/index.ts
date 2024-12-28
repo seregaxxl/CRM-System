@@ -1,7 +1,11 @@
-import { Filter, AllTasks } from "../types"
+import { Filter, AllTasks } from "../types/tasksTypes"
 import axiosInstance from './axiosInstance';
+import { UserData, LoginData } from "../types/authTypes";
 
 const PREFIX_TODOS = '/todos'
+const PREFIX_AUTH = '/auth'
+const PREFIX_USR = '/user'
+
 
 export async function addTask (title:string) {
     try {
@@ -44,6 +48,61 @@ export async function deleteTask (id:number) {
         await axiosInstance.delete(`${PREFIX_TODOS}/${id}`)
     } catch (error) {
         console.error('Error adding', error)
+        throw error
+    }
+}
+
+export async function signUp (userData: UserData) {
+    try {
+        const res = await axiosInstance.post(`${PREFIX_AUTH}/signup`, userData);
+        return res
+    } catch (error: any) {
+        throw error
+    }
+}
+
+export async function signIn (loginData: LoginData) {
+    try {
+        const res = await axiosInstance.post(`${PREFIX_AUTH}/signin`, loginData);
+        return res
+    } catch (error: any) {
+        throw error
+    }
+}
+
+export async function signOut (accessToken:string|null) {
+    try {
+        await axiosInstance.post(`${PREFIX_USR}/logout`,{},{
+            headers: {
+                Authorization: `Bearer ${accessToken}`,
+              }
+            });
+        return true
+    } catch (error: any) {
+        throw error
+    }
+}
+
+
+
+export async function refreshToken (refreshToken: string) {
+    try {
+        const res = await axiosInstance.post(`${PREFIX_AUTH}/refresh`, {refreshToken});
+        return res
+    } catch (error: any) {
+        throw error
+    }
+}
+
+export async function refreshProfile (accessToken: string) {
+    try {
+        const res = await axiosInstance.get(`${PREFIX_USR}/profile`,{
+            headers: {
+                Authorization: `Bearer ${accessToken}`,
+              }
+            });
+        return res
+    } catch (error: any) {
         throw error
     }
 }

@@ -17,3 +17,4 @@ data: Task[]
 }
 
 export type Filter = 'all' | 'completed' | 'inWork'
+

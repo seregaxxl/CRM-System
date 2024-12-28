@@ -1,17 +1,16 @@
 <script setup lang="ts">
-import navBar from '../components/navBar.vue';
-import loaderComponent from '../components/loaderComponent.vue';
-import taskForm from '../components/taskForm.vue';
-import List from '../components/List.vue';
-import SideBar from '../components/SideBar.vue';
+import navBar from '../components/ToDoList/navBar.vue';
+import loaderComponent from '../components/common/loaderComponent.vue';
+import taskForm from '../components/ToDoList/taskForm.vue';
+import List from '../components/ToDoList/List.vue';
 import { onMounted, ref, onBeforeUnmount } from 'vue';
-import { Filter } from '../types';
+import { Filter } from '../types/tasksTypes';
+import { useRouter } from 'vue-router';
+import authModule from '../api/auth';
+import { getAllTasks } from '../api/toDos';
+import { AllTasks } from '../types/tasksTypes'
 
-import {getAllTasks} from '../api/index'
-import { AllTasks } from '../types'
-
-
-
+const router = useRouter()
 const tasks = ref<AllTasks>({info: { all: 0, completed: 0, inWork: 0 },
     data: [],})
 const isLoading = ref<boolean>(true)
@@ -35,31 +34,39 @@ async function updateData () {
 
 let intervalId: number;
 
+async function checkLogin () {
+    if (sessionStorage.refreshToken) {
+    try {
+        const success = await authModule.refreshAccessToken(sessionStorage.refreshToken);
+        if (success) {
+        router.push({ name: 'ToDoList' }); 
+    } else {
+        router.push({ name: 'Login' });
+    }
+        } catch(e) {
+            router.push({ name: 'Login' });
+        } 
+    }
+}
+
 onMounted(async () => {
+    checkLogin()
     updateData()
-    intervalId = setInterval(updateData, 50000);
+    intervalId = setInterval(updateData, 5000);
 })
 
 onBeforeUnmount(() => {
-  clearInterval(intervalId); // Clear interval when the component is destroyed
+  clearInterval(intervalId); 
 });
 </script>
 
 <template>
-    <main>
-        <nav>
-            <SideBar/>
-        </nav>
-        <section class="main">
-            <a-flex :vertical="true" class="layout">
-                <taskForm @dataUpdated="updateData"/>
-                <navBar :info="tasks.info" @activeTab="changeActiveTab"/>
-                <List :tasks="tasks.data" @dataUpdated="updateData"/>    
-            </a-flex>
-            <loaderComponent v-if="isLoading"/>
-        </section>
-    </main>
-
+    <a-flex :vertical="true" class="layout">
+        <taskForm @dataUpdated="updateData"/>
+        <navBar :info="tasks.info" @activeTab="changeActiveTab"/>
+        <List :tasks="tasks.data" @dataUpdated="updateData"/>    
+    </a-flex>
+    <loaderComponent v-if="isLoading"/>
 </template>
 
 <style scoped>

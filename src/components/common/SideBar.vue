@@ -2,6 +2,7 @@
 import { reactive, watchEffect } from 'vue';
 import { ItemType } from 'ant-design-vue';
 import { useRouter, useRoute } from 'vue-router';
+import authModule from '../../api/auth';
 
 const state = reactive({
   selectedKeys: ['1'],
@@ -11,47 +12,46 @@ const state = reactive({
 const router = useRouter()
 const route = useRoute()
 
+function logOut() {
+  authModule.signOut()
+  router.push({ name: 'Login' })
+}
+
 function onSelectMenu({ key }: { key: string }) {
   if (key === '1') {
-    router.push('/'); 
+    router.push({ name: 'ToDoList' }); 
   } else if (key === '2') {
-    router.push('/Profile'); 
+    router.push({ name: 'Profile' }); 
   }
 }
 
 function getItem(
   label: string,
   key: string,
-  icon?: any,
-  children?: ItemType[],
-  type?: 'group',
 ): ItemType {
   return {
     key,
-    icon,
-    children,
-    label,
-    type,
+    label
   } as ItemType;
 }
 
 const items: ItemType[] = reactive([
-  getItem('ToDo List', '1'),
-  getItem('Profile', '2')
+  getItem('toDo List', '1'),
+  getItem('profile', '2')
 ]);
 
 watchEffect(() => {
   if (route.path === '/') {
-    state.selectedKeys = ['1']; // Set to ToDo List
-  } else if (route.path === '/Profile') {
-    state.selectedKeys = ['2']; // Set to Profile
+    state.selectedKeys = ['1']; 
+  } else if (route.path === '/profile') {
+    state.selectedKeys = ['2']; 
   }
 });
 
 </script>
 
 <template>
-    <div>
+    <div class="side-menu-container">
       <a-menu
         v-model:openKeys="state.openKeys"
         v-model:selectedKeys="state.selectedKeys"
@@ -60,6 +60,18 @@ watchEffect(() => {
         @select="onSelectMenu"
       ></a-menu>
     </div>
+    <div class="logout">
+        <button @click="logOut">Logout</button>
+      </div>
 </template>
 
+
+<style scoped>
+
+.logout {
+  position: absolute;
+  bottom: 15px;
+  left: 15px;
+}
+</style>
   
