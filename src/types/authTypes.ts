@@ -4,6 +4,19 @@ export type UserData = {
     password: string
     phoneNumber: string
     username: string
+    id: number
+    isAdmin: boolean
+    isBlocked: boolean
+    date: string
+}
+
+export type SearchData = {
+    search?: string
+    sortBy?: string
+    sortOrder?: 'asc' | 'desc'
+    isBlocked?: boolean
+    limit?: number
+    offset?: number
 }
 
 export type LoginData = {

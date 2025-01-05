@@ -2,11 +2,12 @@
 import CreateForm from '../components/SignUpPage/CreateForm.vue'
 import logo from '../assets/loginLogo.png'
 import { useRouter } from 'vue-router';
+import { routeNames } from '../router';
 
 const router = useRouter()
 
 function toLogin () {
-    router.push({ name: 'Login' })
+    router.push({ name: routeNames.login })
 }
 
 </script>

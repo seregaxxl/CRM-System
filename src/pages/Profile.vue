@@ -1,22 +1,9 @@
 <script lang="ts" setup>
-import { onMounted, ref } from 'vue';
 import loaderComponent from '../components/common/loaderComponent.vue';
-import { UserData } from '../types/authTypes';
-import authModule from '../api/auth';
+import { useProfileStore } from '../stores/profileStore';
 
-const profileData = ref<UserData | null>(null)
-const fetchProfileData = async ():Promise<void> => {
-  try {
-    const res = await authModule.refreshProfile()
-    profileData.value = res.data
-  } catch (error) {
-    console.error('Failed to fetch profile data', error);
-  }
-};
-onMounted( () => {
-    fetchProfileData();
-})
-
+const profileStore = useProfileStore()
+const profileData = profileStore.profileData
 </script>
 
 <template>

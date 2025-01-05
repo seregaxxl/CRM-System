@@ -1,8 +1,9 @@
 <script lang="ts" setup>
   import { reactive } from 'vue';
   import { useRouter } from 'vue-router';
-  import authModule from '../../api/auth';
+  import { signIn } from '../../api/auth';
   import { LoginData } from '../../types/authTypes';
+  import { routeNames } from '../../router';
 
   const router = useRouter()
   
@@ -18,11 +19,11 @@
     remember: true,
   });
   const onFinish = async (values: LoginData) => {
-    const res = await authModule.signIn(values)
+    const res = await signIn(values)
     if (formState.remember) {
       sessionStorage['refreshToken'] = res.refreshToken;
     }
-    router.push('/')
+    router.push({ name: routeNames.toDoList })
   };  
   
   const onFinishFailed = (errorInfo: any) => {
@@ -74,7 +75,7 @@
   
       <a-form-item name="remember-n-forgot" :wrapper-col="{ offset: 0, span: 16 }">
         <a-checkbox class="checkbox" v-model:checked="formState.remember">Remember me</a-checkbox>
-        <a href="#">Forgot password?</a>
+        <!-- <a href="#">Forgot password?</a> -->
       </a-form-item>
   
       <a-form-item :wrapper-col="{ offset: 0, span: 16 }">

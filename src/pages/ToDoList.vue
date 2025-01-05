@@ -5,12 +5,9 @@ import taskForm from '../components/ToDoList/taskForm.vue';
 import List from '../components/ToDoList/List.vue';
 import { onMounted, ref, onBeforeUnmount } from 'vue';
 import { Filter } from '../types/tasksTypes';
-import { useRouter } from 'vue-router';
-import authModule from '../api/auth';
 import { getAllTasks } from '../api/toDos';
 import { AllTasks } from '../types/tasksTypes'
 
-const router = useRouter()
 const tasks = ref<AllTasks>({info: { all: 0, completed: 0, inWork: 0 },
     data: [],})
 const isLoading = ref<boolean>(true)
@@ -34,23 +31,9 @@ async function updateData () {
 
 let intervalId: number;
 
-async function checkLogin () {
-    if (sessionStorage.refreshToken) {
-    try {
-        const success = await authModule.refreshAccessToken(sessionStorage.refreshToken);
-        if (success) {
-        router.push({ name: 'ToDoList' }); 
-    } else {
-        router.push({ name: 'Login' });
-    }
-        } catch(e) {
-            router.push({ name: 'Login' });
-        } 
-    }
-}
+
 
 onMounted(async () => {
-    checkLogin()
     updateData()
     intervalId = setInterval(updateData, 5000);
 })
