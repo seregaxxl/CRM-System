@@ -1,25 +1,14 @@
 <script lang="ts" setup>
-import { onMounted, ref, reactive, watch } from 'vue';
+import { onMounted, ref, reactive } from 'vue';
 import { getAllUsers, getSortedUsers, deleteUser, updateUser } from '../api/admin';
-import type { UserData, SearchData } from '../types/authTypes';
+import type { SearchData } from '../types/authTypes';
 import { useProfileStore } from '../stores/profileStore';
-// import { useRouter } from 'vue-router';
-// import { routeNames } from '../router';
+import { useRouter } from 'vue-router';
+import { routeNames } from '../router';
 
-// const router = useRouter()
+const router = useRouter()
 
-interface EditUserFormState {
-    email: string;
-    username: string;
-    phoneNumber: string;
-  }
-const editUserFormState = reactive<EditUserFormState>({
-    email: '',
-    username: '',
-    phoneNumber: '',
-  });
 const profileStore = useProfileStore();
-const editView = ref<number>(0)
 const filter = ref<SearchData>({})
 interface FormState {
   searchReq: string;
@@ -28,7 +17,6 @@ const formState = reactive<FormState>({
   searchReq: ''
 });
 const loading = ref<boolean>(true)
-const data = ref<UserData[] | null>([]);
 function status (isAdmin:boolean, yes: string, no: string) {
   if (isAdmin) {
     return yes
@@ -40,24 +28,28 @@ async function sendSearchReq(data:SearchData) {
   profileStore.profilesData = res.data
   profileStore.totalAmount = res.meta.totalAmount
 }
+
 function failed () {
   console.log('Failed')
 }
+
 function paginationFunction(page:number) {
   filter.value.offset = Number(page-1)
   sendSearchReq(filter.value)
 }
-function toggleEdit(id:number, username?:string, email?:string, phoneNumber?:string) {
-    editView.value=id
-    if (username) {editUserFormState.username = username}
-    if (email) {editUserFormState.email = email}
-    if (phoneNumber) {editUserFormState.phoneNumber = phoneNumber}
+
+function navigateToEditUserPage(id: number, username: string, email: string, phoneNumber: string) {
+  router.push({
+    name: routeNames.editUser,
+    params: { id },
+    query: { username, email, phoneNumber },
+  });
 }
 
 onMounted(async () => {
     try {
         const res = await getAllUsers()
-        data.value = res.data
+        profileStore.profilesData = res.data
         profileStore.totalAmount = res.meta.totalAmount
         loading.value = false
     } catch (e) {
@@ -75,86 +67,24 @@ async function editUser( action:(id:number, userData:{username?:string,email?:st
 }
 
 
-watch(() => profileStore.profilesData, (newVal) => {
-  data.value = newVal
-})
 
 
 </script>
 
 <template>
   <h1>Users</h1>
-    <a-list bordered :data-source="data" :loading="loading">
+    <a-list bordered :data-source="profileStore.profilesData || []" :loading="loading">
       <template #renderItem="{ item }" v-if="!loading">
         <a-list-item class="userContainer">
-          <a-form
-          class="editForm"
-          v-if = "editView === item.id"
-            :model="formState"
-            hideRequiredMark="true"
-            noStyle="true"
-            name="basic"
-            :label-col="{ span: 0 }"
-            :wrapper-col="{ span: 16 }"
-            autocomplete="off"
-            @finish="() => {
-              editUser(updateUser, item.id, {
-                username: editUserFormState.username,
-                email: editUserFormState.email,
-                phoneNumber: editUserFormState.phoneNumber
-              });
-              toggleEdit(0);
-            }"
-            @finishFailed="() => {failed(); toggleEdit(0)}"
-          >
-          <a-form-item
-              label="Username"
-              name="username"
-              class="ant-item"
-              :label-col="{ span: 24 }"
-              :wrapper-col="{ span: 24 }"
-              :colon="false"
-            >
-              <a-input v-model:value="editUserFormState.username" />
-            </a-form-item>
-            <a-form-item
-              label="Email"
-              name="email"
-              class="ant-item"
-              :label-col="{ span: 24 }"
-              :wrapper-col="{ span: 24 }"
-              :colon="false"
-            >
-              <a-input v-model:value="editUserFormState.email" />
-            </a-form-item>
-            <a-form-item
-              label="PhoneNumber"
-              name="phoneNumber"
-              class="ant-item"
-              :rules="[{pattern: /\(?([0-9]{3})\)?([ .-]?)([0-9]{3})\2([0-9]{4})/, message: 'must be valid phone number'}
-              ]"
-              :label-col="{ span: 24 }"
-              :wrapper-col="{ span: 24 }"
-              :colon="false"
-            >
-              <a-input v-model:value="editUserFormState.phoneNumber" />
-            </a-form-item>
-            <a-form-item :wrapper-col="{ offset: 0, span: 16 }">
-              <a-button class="ant-button" type="primary" html-type="submit">Save</a-button>
-            </a-form-item>
-          </a-form>
-          <div>
-            
-          </div>
           <template #actions>
-            <a v-if = "editView !== item.id" @click="() => {toggleEdit(item.id, item.username, item.email, item.phoneNumber)}" key="edit-button">edit</a>
+            <a  @click="() => {navigateToEditUserPage(item.id, item.username, item.email, item.phoneNumber)}" key="edit-button">edit</a>
             <a-popconfirm
               title="Are you sure to delete this user?"
               ok-text="Yes"
               cancel-text="No"
               @confirm="() => {editUser(deleteUser, item.id, {})}"
             >
-              <a v-if = "editView !== item.id">delete</a>
+              <a >delete</a>
             </a-popconfirm>
             <a-popconfirm v-if="item.isBlocked"
               title="Are you sure to unblock this user?"
@@ -162,7 +92,7 @@ watch(() => profileStore.profilesData, (newVal) => {
               cancel-text="No"
               @confirm="() => {editUser(updateUser, item.id, {block:'unblock'})}"
             >
-              <a v-if = "editView !== item.id">unblock</a>
+              <a >unblock</a>
             </a-popconfirm>
             <a-popconfirm v-else
               title="Are you sure to block this user?"
@@ -170,7 +100,7 @@ watch(() => profileStore.profilesData, (newVal) => {
               cancel-text="No"
               @confirm="() => {editUser(updateUser, item.id, {block:'block'})}"
             >
-              <a v-if = "editView !== item.id">block</a>
+              <a >block</a>
             </a-popconfirm>
             <a-popconfirm v-if="item.isAdmin"
               title="Are you sure to remove admin rights from this user?"
@@ -178,7 +108,7 @@ watch(() => profileStore.profilesData, (newVal) => {
               cancel-text="No"
               @confirm="() => {editUser(updateUser, item.id, {isAdmin: false})}"
             >
-              <a v-if = "editView !== item.id">- admin</a>
+              <a >- admin</a>
             </a-popconfirm>
             <a-popconfirm v-else
               title="Are you sure to add admin rights to this user?"
@@ -186,16 +116,15 @@ watch(() => profileStore.profilesData, (newVal) => {
               cancel-text="No"
               @confirm="() => {editUser(updateUser, item.id, {isAdmin: true})}"
             >
-              <a v-if = "editView !== item.id">- admin</a>
+              <a >- admin</a>
             </a-popconfirm>
           </template>
-          <!-- <input v-if = "editView !== item.id" type="checkbox"> -->
-          <div v-if = "editView !== item.id" class="username">{{ item.username }}</div>
-          <div v-if = "editView !== item.id" class="email">{{ item.email }}</div>
-          <div v-if = "editView !== item.id" class="date">{{ item.date }}</div>
-          <div v-if = "editView !== item.id" class="blocked">{{status(item.isBlocked,'+', '-')}}</div>
-          <div v-if = "editView !== item.id" class="phoneNumber">{{ item.phoneNumber }}</div>
-          <div v-if = "editView !== item.id" class="role">{{status(item.isAdmin,'Admin', 'User')}}</div>
+          <div  class="username">{{ item.username }}</div>
+          <div  class="email">{{ item.email }}</div>
+          <div  class="date">{{ item.date }}</div>
+          <div  class="blocked">{{status(item.isBlocked,'+', '-')}}</div>
+          <div  class="phoneNumber">{{ item.phoneNumber }}</div>
+          <div  class="role">{{status(item.isAdmin,'Admin', 'User')}}</div>
         </a-list-item>
       </template>
       <template #header>
@@ -269,7 +198,7 @@ watch(() => profileStore.profilesData, (newVal) => {
           </div>
         </template>
         <template #footer>
-          <a-pagination @change="paginationFunction" :defaultPageSize="20" :total="profileStore.totalAmount" />
+          <a-pagination @change="paginationFunction" :defaultPageSize="20" :showSizeChanger="false" :total="profileStore.totalAmount" />
         </template>
     </a-list>
 </template>

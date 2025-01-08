@@ -33,7 +33,8 @@ const routes = [
       { path: '/profile', name: routeNames.profile, component: Profile},
       { path: '/users', name: routeNames.users, component: Users,
          meta: { requiresAdmin: true } },
-      { path: '/editUser', name: routeNames.editUser, component: EditUserPage,
+      { path: '/editUser/:id', name: routeNames.editUser, component: EditUserPage,
+        props:true,
         meta: { requiresAdmin: true } },
     ],
     meta: { requiresAuth: true } 
