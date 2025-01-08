@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { onMounted, reactive } from 'vue';
+import { reactive } from 'vue';
 import { updateUser } from '../api/admin';
 import { useRouter, useRoute } from 'vue-router';
 import { routeNames } from '../router';
