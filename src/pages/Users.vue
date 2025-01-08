@@ -210,7 +210,7 @@ async function editUser( action:(id:number, userData:{username?:string,email?:st
   }
   .userContainer {
     display: grid;
-    grid-template-columns: 10px 100px 150px 150px 75px 100px 30px 300px;
+    grid-template-columns: 100px 150px 150px 75px 100px 30px 300px;
     column-gap: 20px;
   }
   .sortingHeader {
