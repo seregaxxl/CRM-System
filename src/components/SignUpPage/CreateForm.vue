@@ -79,7 +79,8 @@ const  onFinish = async (values: any) => {
       name="username"
       class="ant-item"
       :rules="[{ required: true, message: 'Please input your username!' },
-          {min: 1, max: 60, message: 'Lenght 1 - 60'}
+          {min: 1, max: 60, message: 'Lenght 1 - 60'},
+          { pattern: /^[a-zA-Zа-яА-ЯёЁ]+$/u, message: 'Only Latin and Cyrillic characters are allowed' }
       ]"
       :label-col="{ span: 24 }"
       :wrapper-col="{ span: 24 }"
@@ -145,7 +146,7 @@ const  onFinish = async (values: any) => {
       label="PhoneNumber"
       name="phoneNumber"
       class="ant-item"
-      :rules="[{pattern: /\(?([0-9]{3})\)?([ .-]?)([0-9]{3})\2([0-9]{4})/, message: 'must be valid phone number'}
+      :rules="[{pattern: /^(8|7|\+7)((\d{10})|(\s\(\d{3}\)\s\d{3}\s\d{2}\s\d{2}))$/, message: 'must be valid phone number' }
       ]"
       :label-col="{ span: 24 }"
       :wrapper-col="{ span: 24 }"

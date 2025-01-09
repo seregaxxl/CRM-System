@@ -50,6 +50,7 @@ export async function changeUserData (id:number, userData:{username?:string,emai
     try {
         await axiosInstance.put(`${PREFIX_ADMIN}/users/${id}`, userData);
     } catch (error: any) {
+        alert('ERROR')
         throw error
     }
 }
