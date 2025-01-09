@@ -44,16 +44,16 @@ async function editUser(id:number, username:string, email:string, phoneNumber:st
     if (res.email || res.username || res.phoneNumber) {
       await updateUser(id,res)
       console.log('changes')
+      router.push({name: routeNames.users})
     }  else {
       console.log('no changes')
     }
-    router.push({name: routeNames.users})
+    
 }
 
 
 function failed () {
   console.log('Failed')
-  router.push({name: routeNames.users})
 }
 
 </script>
@@ -82,6 +82,9 @@ function failed () {
               :label-col="{ span: 24 }"
               :wrapper-col="{ span: 24 }"
               :colon="false"
+              :rules="[{ required: true, message: 'Please input your username!' },
+                  {min: 1, max: 60, message: 'Lenght 1 - 60'}
+              ]"
             >
               <a-input v-model:value="editUserFormState.username" />
             </a-form-item>
@@ -92,6 +95,9 @@ function failed () {
               :label-col="{ span: 24 }"
               :wrapper-col="{ span: 24 }"
               :colon="false"
+              :rules="[{ required: true, message: 'Please input your email!' },
+              {type:'email', message: 'must be valid email'}
+              ]"
             >
               <a-input v-model:value="editUserFormState.email" />
             </a-form-item>

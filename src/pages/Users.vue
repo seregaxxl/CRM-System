@@ -66,8 +66,17 @@ async function editUser( action:(id:number, userData:{username?:string,email?:st
   profileStore.profilesData = res.data
 }
 
-
-
+function formatDate(dateString: string): string {
+  const date = new Date(dateString);
+  return new Intl.DateTimeFormat('en-US', {
+    year: '2-digit',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false,
+  }).format(date);
+}
 
 </script>
 
@@ -121,7 +130,7 @@ async function editUser( action:(id:number, userData:{username?:string,email?:st
           </template>
           <div  class="username">{{ item.username }}</div>
           <div  class="email">{{ item.email }}</div>
-          <div  class="date">{{ item.date }}</div>
+          <div  class="date">{{ formatDate(item.date) }}</div>
           <div  class="blocked">{{status(item.isBlocked,'+', '-')}}</div>
           <div  class="phoneNumber">{{ item.phoneNumber }}</div>
           <div  class="role">{{status(item.isAdmin,'Admin', 'User')}}</div>
@@ -210,7 +219,7 @@ async function editUser( action:(id:number, userData:{username?:string,email?:st
   }
   .userContainer {
     display: grid;
-    grid-template-columns: 100px 150px 150px 75px 100px 30px 300px;
+    grid-template-columns: 100px 200px 150px 75px 150px 30px 300px;
     column-gap: 20px;
   }
   .sortingHeader {
@@ -220,9 +229,8 @@ async function editUser( action:(id:number, userData:{username?:string,email?:st
     border-width: 1px;
     margin-top: 20px;
     padding: 5px;
-    padding-left: 30px;
     display: grid;
-    grid-template-columns: 100px 150px 150px 80px 90px 20px 300px;
+    grid-template-columns: 100px 200px 150px 80px 140px 20px 300px;
     column-gap: 20px;
     div {
       display: flex;
