@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {addTask} from '../api/index'
+import { addTask } from '../../api/toDos';
 import { reactive } from 'vue';
 import type { Rule } from 'ant-design-vue/es/form';
 
@@ -39,7 +39,6 @@ async function addTaskAndRefresh(title:string) {
         autocomplete="off"
         @finish="() => addTaskAndRefresh(formState.task)"
     >
-    <!-- addTaskAndRefresh(e.target.form.querySelector('input[name=`task`]').value)" -->
         <a-form-item
         name="task"
         >

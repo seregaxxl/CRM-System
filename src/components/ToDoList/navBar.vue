@@ -1,9 +1,9 @@
 <script setup lang="ts">
 
 import { ref, watch } from 'vue';
-import { TaskInfo } from '../types';
+import { TaskInfo } from '../../types/tasksTypes';
 import { MenuProps } from "ant-design-vue";
-import { Filter } from '../types';
+import { Filter } from '../../types/tasksTypes';
 
 interface Emits {
   (event: 'activeTab', tab: Filter): void;

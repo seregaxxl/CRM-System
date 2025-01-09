@@ -1,5 +1,5 @@
-import { Filter, AllTasks } from "../types"
-import axiosInstance from './axiosInstance';
+import axiosInstance from "./axiosInstance";
+import { Filter, AllTasks } from "../types/tasksTypes"
 
 const PREFIX_TODOS = '/todos'
 
@@ -21,20 +21,16 @@ export async function getAllTasks (filter:Filter): Promise<AllTasks> {
             params: { filter }
         });
         const data: AllTasks = res.data
-        console.log('Fetching ')
         return data
     } catch (error) {
-        console.error('Error fetching', error)
         throw error
     } 
 }
 
 export async function updateTask (id:number, changedFields : {isDone?: boolean, title?: string} ) {
     try {
-       const res = await axiosInstance.put(`${PREFIX_TODOS}/${id}`, changedFields)
-       console.log(res)
+       await axiosInstance.put(`${PREFIX_TODOS}/${id}`, changedFields)
     } catch (error) {
-        console.error('Error adding', error)
         throw error
     }
 }
@@ -43,12 +39,6 @@ export async function deleteTask (id:number) {
     try {
         await axiosInstance.delete(`${PREFIX_TODOS}/${id}`)
     } catch (error) {
-        console.error('Error adding', error)
         throw error
     }
 }
-
-
-
-
-
